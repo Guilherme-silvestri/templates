@@ -1,8 +1,8 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: create-ec2-instance
-  title: Create an EC2 Instance
+  name: create-ssm-dev-stg
+  title: Create SSM & Secret
   description: Create an Instance to deploy your application
   tags: ['recommended']
 spec:
@@ -29,14 +29,12 @@ spec:
           description: Name of the region where you want to create your create-ec2-instance eg:- us-east-1, ap-south-1 etc.
 
         InstanceType:
-          title: Type of Instance.
+          title: Type Resource
           type: string
           description: Type of the instance that you want to deploy, for eg:- t2.medium, t3.medium etc.
           enum:
-            - t2.medium
-            - t2.small
-            - t2.micro
-            - t3.medium
+            - SSM
+            - Secret
         action:
           title: action
           type: string
@@ -55,7 +53,7 @@ spec:
           ui:field: RepoUrlPicker
           ui:options:
             allowedHosts:
-              - github.com
+              - dev.azure.com
 
   steps:
 # Getting the all the files/details from the template
