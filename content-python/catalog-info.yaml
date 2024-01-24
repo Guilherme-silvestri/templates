@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  namespace: default
+  name: ${{ values.name | dump }}
+spec:
+  type: service
+  owner: DMCONTA
+  lifecycle: experimental

@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "new-ms-pattern"
+version = "0.1.0"
+description = ""
+authors = ["Douglas Eduardo Silverio <douglas.silverio@vocedm.com.br>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.109.0"
+bson = "^0.5.10"
+uvicorn = "^0.25.0"
+loguru = "^0.7.2"
+logbook = "^1.7.0.post0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

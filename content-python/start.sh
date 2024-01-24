@@ -1,0 +1,1 @@
+poetry run uvicorn --reload --host 127.0.0.1 --port 4500 src.api.main:app
