@@ -1,0 +1,60 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: adr-template
+  title: ADR Template
+  description: Template para criar um ADR com a ação personalizada
+spec:
+  parameters:
+    - title: Informações do ADR
+      required:
+        - adrTitle
+        - authorName
+        - squad
+        - context
+        - decision
+        - consequences
+      properties:
+        adrTitle:
+          type: string
+          title: Título do ADR
+        authorName:
+          type: string
+          title: Nome do Autor
+        squad:
+          type: string
+          title: Squad Responsável
+        context:
+          type: string
+          title: Contexto do ADR
+        decision:
+          type: string
+          title: Decisão
+        consequences:
+          type: string
+          title: Consequências
+        costImpact:
+          type: string
+          title: Impacto de Custo
+          enum:
+            - Yes
+            - No
+        costDetails:
+          type: string
+          title: Detalhes do Custo
+          description: "Caso haja impacto de custo, preencha os detalhes."
+  steps:
+    - id: createADR
+      name: Criar ADR
+      action: custom:create-adr-file
+      input:
+        adrTitle: ${{ parameters.adrTitle }}
+        authorName: ${{ parameters.authorName }}
+        squad: ${{ parameters.squad }}
+        context: ${{ parameters.context }}
+        decision: ${{ parameters.decision }}
+        consequences: ${{ parameters.consequences }}
+        costImpact: ${{ parameters.costImpact }}
+        costDetails: ${{ parameters.costDetails }}
+  output:
+    link: "O ADR foi criado com sucesso!"
