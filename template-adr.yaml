@@ -2,59 +2,119 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: adr-template
-  title: ADR Template
-  description: Template para criar um ADR com a ação personalizada
+  title: Create ADR (Architecture Decision Record)
+  description: Template to create an ADR
 spec:
+  owner: arquitetura
+  type: documentation
   parameters:
-    - title: Informações do ADR
-      required:
-        - adrTitle
-        - authorName
-        - squad
-        - context
-        - decision
-        - consequences
+    - title: ADR Information
       properties:
         adrTitle:
+          title: ADR Title
           type: string
-          title: Título do ADR
-        authorName:
+          description: The title of your ADR
+          ui:autofocus: true
+        status:
+          title: ADR Status
           type: string
-          title: Nome do Autor
+          enum:
+            - Proposed
+          default: Proposed
+          description: The current status of the ADR
         squad:
+          title: Responsible Area
           type: string
-          title: Squad Responsável
+          description: The name of the area responsible for the ADR
+        authorName:
+          title: Author Name
+          type: string
+          description: The name of the person who created the ADR
         context:
+          title: Context
           type: string
-          title: Contexto do ADR
+          description: A brief description of the context for this ADR
+          ui:widget: textarea
         decision:
+          title: Decision
           type: string
-          title: Decisão
+          description: The decision made
+          ui:widget: textarea
         consequences:
+          title: Consequences
           type: string
-          title: Consequências
+          description: Potential consequences of the decision
+          ui:widget: textarea
+        solutionLink:
+          title: Solution Link
+          type: string
+          description: URL of the solution related to this ADR
         costImpact:
+          title: Will there be any cost associated with this decision?
           type: string
-          title: Impacto de Custo
           enum:
             - Yes
             - No
+          default: No
+          description: Indicate whether this decision will result in any cost
         costDetails:
+          title: Cost Details (if applicable)
           type: string
-          title: Detalhes do Custo
-          description: "Caso haja impacto de custo, preencha os detalhes."
+          description: If there is a cost, describe it here
+          ui:widget: textarea
+          ui:conditional:
+            when: costImpact
+            is: Yes
+    - title: Instructions
+      properties:
+        instructions:
+          type: string
+          title: Important Notice
+          readOnly: true
+          description: |
+            After creating this ADR, you must open a request for the architecture team to review it according to the documentation: [Architecture Review Documentation](https://backstage.vocedm.net/docs/default/component/plataforma/adrs/)
   steps:
-    - id: createADR
-      name: Criar ADR
-      action: custom:create-adr-file
+    - id: cloneAzureRepo
+      name: Clone Azure Repo
+      action: azure:repo:clone
       input:
-        adrTitle: ${{ parameters.adrTitle }}
-        authorName: ${{ parameters.authorName }}
-        squad: ${{ parameters.squad }}
-        context: ${{ parameters.context }}
-        decision: ${{ parameters.decision }}
-        consequences: ${{ parameters.consequences }}
-        costImpact: ${{ parameters.costImpact }}
-        costDetails: ${{ parameters.costDetails }}
+        remoteUrl: "https://devdmcard@dev.azure.com/devdmcard/Arquitetura/_git/documentacao"
+        branch: "main"
+        targetPath: ./skeleton
+
+    - id: fetch
+      name: Template Docs Skeleton
+      action: fetch:template
+      targetPath: ./sub-directory
+      input:
+        url: "https://devdmcard@dev.azure.com/devdmcard/Arquitetura/_git/documentacao/skeleton"
+        values:
+          adrTitle: ${{ parameters.adrTitle }}
+
+    - id: pushAzureRepo
+      name: Push to Remote Azure Repo
+      action: azure:repo:push
+      input:
+        branch: ${{ parameters.adrTitle }}
+        sourcePath: ./skeleton
+        gitCommitMessage: Add ${{ parameters.adrTitle }} project files
+
+    - id: pullRequestAzureRepo
+      name: Create a Pull Request to Azure Repo
+      action: azure:repo:pr
+      input:
+        sourceBranch: ${{ parameters.adrTitle }}
+        targetBranch: "main"
+        repoId: documentacao
+        title: ${{ parameters.adrTitle }}
+        project: Arquitetura
+        organization: devdmcard
+        supportsIterations: false
+
   output:
-    link: "O ADR foi criado com sucesso!"
+    links:
+      - title: Repository
+        url: "dev.azure.com?owner=Arquitetura&repo=documentacao&organization=devdmcard"
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
